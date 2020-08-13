@@ -28,11 +28,6 @@ contract('TokenExchange', async accounts => {
   });
 
   it('sellTokens() should sell tokens in exchange for ETH', async () => {
-    // const userTokenBalance = await grtToken.balanceOf(user);
-    // console.log(userTokenBalance.toString())
-    //
-    // const weiValue = web3.utils.toWei('50', 'ether');
-    // console.log(weiValue)
     await grtToken.approve(tokenExchange.address, tokenDenominated('50'), {from: user});
 
     await tokenExchange.sellTokens(tokenDenominated('50'), {from: user});
