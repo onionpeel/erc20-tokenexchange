@@ -1,15 +1,31 @@
 import React, { useState } from 'react';
+import { drizzleReactHooks } from '@drizzle/react-plugin';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 
+const { useDrizzle, useDrizzleState } = drizzleReactHooks;
+
 const BuyForm = () => {
-  const [tokenAmount, setTokenAmount] = useState("");
+  const { drizzle, useCacheSend } = useDrizzle();
+  console.log(useCacheSend)
+  const drizzleState = useDrizzleState(state => state);
+  const { send } = useCacheSend('TokenExchange', 'buyTokens');
+  console.log('send: ', send)
+  let [tokenAmount, setTokenAmount] = useState("");
 
   const handleOnChange = e => {
     setTokenAmount(e.target.value);
-    return;
+  };
+
+  const handleOnSubmit = e => {
+    e.preventDefault();
+    if(!tokenAmount) return;
+    if(!Number(tokenAmount)) return;
+
+    send(tokenAmount);
+    setTokenAmount("");
   };
 
   return (
@@ -20,34 +36,33 @@ const BuyForm = () => {
             Current exchange rate:  1 ETH = 50 tokens
           </div>
 
-          <Form.Group style={{marginTop: 15}}>
-            <Form.Row>
-              <Form.Label column xs={10}>
-                Enter the number of tokens to purchase
-              </Form.Label>
-              <Col xs={2}>
-                <Form.Control type="text" placeholder="0" value={tokenAmount} onChange={handleOnChange}/>
-              </Col>
-            </Form.Row>
-          </Form.Group>
+          <Form onSubmit={handleOnSubmit}>
+            <Form.Group style={{marginTop: 15}}>
+              <Form.Row>
+                <Form.Label column xs={10}>
+                  Enter the number of tokens to purchase
+                </Form.Label>
+                <Col xs={2}>
+                  <Form.Control type="text" value={tokenAmount} onChange={handleOnChange}/>
+                </Col>
+              </Form.Row>
 
-          <Form.Group style={{marginTop: 15}}>
-            <Form.Row>
-              <Form.Label column xs={10}>
-                XXX GRT tokens = YYY ETH
-              </Form.Label>
-              <Col xs={2}>
-                <Button style={{backgroundColor: "#C56BF2", borderColor: '#E3C5F1'}}>
-                  Buy
-                </Button>
-              </Col>
-            </Form.Row>
-          </Form.Group>
+              <Form.Row style={{marginTop: 15}}>
+                <Form.Label column xs={10}>
+                  XXX GRT tokens = YYY ETH
+                </Form.Label>
+                <Col xs={2}>
+                  <Button type="submit" style={{backgroundColor: "#C56BF2", borderColor: '#E3C5F1'}}>
+                    Buy
+                  </Button>
+                </Col>
+              </Form.Row>
+            </Form.Group>
+          </Form>
         </Col>
       </Row>
     </>
   );
 };
-
 
 export default BuyForm;
